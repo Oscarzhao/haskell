@@ -1,2 +1,2 @@
 # haskell
-Learn Haskell
+Learn Haskell Basics
