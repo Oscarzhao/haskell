@@ -34,6 +34,5 @@ fromList = reverse . fromListHelper
 
 fromListHelper :: List a -> [a]
 fromListHelper Nil = []
-fromListHelper xs = y:ys 
-    where (Snoc snocys y) = xs
-          ys = fromListHelper snocys
+fromListHelper (Snoc xs x) = x:ys 
+    where ys = fromListHelper xs
