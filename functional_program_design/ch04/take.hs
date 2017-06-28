@@ -19,5 +19,5 @@ mytake n (x:xs)
 mySplitAt :: Int -> [a] -> ([a], [a])
 mySplitAt _ []     = ([],[])
 mySplitAt n (x:xs) =  if n <= 0  then ([], x:xs)
-                    else (x:first, second)
-                    where (first, second) = mySplitAt (n-1) xs
+                      else (x:first, second)
+                      where (first, second) = mySplitAt (n-1) xs
