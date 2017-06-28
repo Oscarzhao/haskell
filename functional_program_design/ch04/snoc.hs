@@ -22,17 +22,11 @@ snoctail (xs `Snoc` x) = x
 -- convert Cons-wat list to Snoc-way list
 toList :: [a] -> List a 
 toList = toListHelper . reverse
-
-toListHelper :: [a] -> List a 
-toListHelper [] = Nil 
-toListHelper (x:xs) = Snoc snocxs x
-    where snocxs = toListHelper xs
+    where toListHelper [] = Nil
+          toListHelper (x:xs) = Snoc (toListHelper xs) x
 
 -- convert Snoc-way list to Cons-way list
 fromList :: List a -> [a]
 fromList = reverse . fromListHelper
-
-fromListHelper :: List a -> [a]
-fromListHelper Nil = []
-fromListHelper (Snoc xs x) = x:ys 
-    where ys = fromListHelper xs
+    where fromListHelper Nil = []
+          fromListHelper (Snoc xs x) = x: (fromListHelper xs)
