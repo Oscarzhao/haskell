@@ -1,6 +1,6 @@
 -- Thinking Functionally with Haskell
 -- Chapter 05 solve Sudoku
---
+-- solution version 1: it can solve some sudoku problems, but not all (see example 2)
 
 import Data.List
 
