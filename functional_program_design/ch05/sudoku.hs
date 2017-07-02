@@ -22,7 +22,7 @@ blank = (=='0')
 
 -- main solve function
 solve :: Grid -> [Grid]
-solve = filter valid . completions
+solve = take 1 . filter valid . completions
 
 -- completions fill blanks in a Grid, and produces all possible Grids
 completions :: Grid -> [Grid]
@@ -42,8 +42,14 @@ exclude m = (r, c, b)
                   c = excludeGrid (transpose m)
                   b = excludeGrid (unitGrid m)
 
+--expand :: Matrix [Digit] -> [Grid]
 expand :: Matrix [Digit] -> [Grid]
-expand _ = []
+expand [] = []
+expand md = foldl pickOne [] ((foldl pickOne []) md)
+            where pickOne [] ys = map (\y -> [y]) ys
+                  pickOne xss ys = concat (map (\y -> map (\xs -> y:xs) xss) ys)
+
+
 
 -- valid checks if a Grid is a valid Grid
 valid :: Grid -> Bool
