@@ -34,6 +34,9 @@ choices m = zipWith rowCandidate [0..] m
                   rowCandidate idxR xs = zipWith (candidate idxR) [0..] xs
                   (exR, exC, exB) = exclude m
 
+simplifyGrid :: Grid -> Grid
+simplifyGrid = map (\row -> map (\candidates -> if length candidates == 1 then candidates!!0 else '0') row ) . choices
+
 -- get exclusions for rows, cols, blocks
 exclude :: Grid -> ([Row Digit], [Row Digit], [Row Digit])
 exclude m = (r, c, b)
@@ -42,7 +45,7 @@ exclude m = (r, c, b)
                   c = excludeGrid (transpose m)
                   b = excludeGrid (unitGrid m)
 
---expand :: Matrix [Digit] -> [Grid]
+--expand expands choices into all possible Grids
 expand :: Matrix [Digit] -> [Grid]
 expand [] = []
 expand md = foldl pickOne [] ((foldl pickOne []) md)
@@ -92,5 +95,11 @@ validRow xs = snd (foldl acc ('0', True) xs)
               where acc (prev, False) x = (x, False) -- duplication found
                     acc (prev, True) x = (x, x /= prev)
 
+
 -- sample.json is all the possibilities of Grid
 sample = ["004005700", "000009400", "360000008", "720060000", "000402000", "000080093", "400000056", "005300000", "006100900"]
+sampleFinal = until (\(x,y) -> x==y) (\(x,y)->(y, simplifyGrid y)) (sample, simplifyGrid sample)
+
+sample2 = ["090000307", "502807000", "40000208", "007900000", "000108000", "000006400", "700300004", "000709206", "903000080"]
+sample3 = simplifyGrid sample2
+sample2Final = until (\(x,y) -> x==y) (\(x,y)->(y, simplifyGrid y)) (sample2, simplifyGrid sample2)
