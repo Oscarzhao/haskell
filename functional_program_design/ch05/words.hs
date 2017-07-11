@@ -9,9 +9,11 @@ whiteSpace :: Char -> Bool
 whiteSpace ' ' = True
 whiteSpace '\t' = True 
 whiteSpace '\n' = True
+whiteSpace '\r' = True
 whiteSpace _ = False
 
 words' :: [Char] -> [[Char]]
-words' [] = []
-words' ss = let (prefix, suffix) = span (not . whiteSpace) ss 
-            in prefix : words' (dropWhile whiteSpace suffix)
+words' s = helper (dropWhile whiteSpace s)
+    where helper [] = [] 
+          helper ss = let (prefix, suffix) = span (not . whiteSpace) (dropWhile whiteSpace ss) 
+                      in prefix : helper (dropWhile whiteSpace suffix)
