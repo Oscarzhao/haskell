@@ -42,3 +42,11 @@ banana _ = Nothing
 -- Usage:
 -- return (0,0) >>= landLeft 1 >> banana >>= landRight 1 
 -- expect Nothing
+
+-- We can use do notation to simplify the code
+routine :: Maybe Pole
+routine = do
+    start <- return (0,0)
+    first <- landLeft 2 start
+    second <- landRight 2 first
+    landLeft 1 second
