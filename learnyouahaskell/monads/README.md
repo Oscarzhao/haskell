@@ -131,3 +131,39 @@ sevensOnly = do
     guard ('7' `elem` show x)
     return x
 ```
+
+## Monad Laws
+
+Just because something is made an instance of the `Monad` type class doesn't mean that it's a monad,
+it just means that it was made an instance of a type class.
+For a type to truly be a monad, the monad laws must hold for that type.
+(Why we need the laws) *These laws allow us to make reasonable assumptions about the type and its behavior*.
+
+1. Left Identity
+
+`return x >>= f` is the same as `f x`.
+
+2. Right Identity
+
+`m >>= return` is the same as `m`.
+
+Check the code:
+
+```{haskell}
+ghci> Just "move on up" >>= (\x -> return x)
+Just "move on up"
+ghci> [1,2,3,4] >>= (\x -> return x)
+[1,2,3,4]
+ghci> putStrLn "Wah!" >>= (\x -> return x)
+Wah!
+```
+
+Check the definition of `>>=`, and reason why.
+
+for list is: `xs >>= f = concat (map f xs)`
+
+3. Associativity
+
+The final monad law says that when we have a chain of monadic function applications with `>>=`, it shouldn't matter how they're nested. Formally written:
+
+Doing `(m >>= f) >>= g` is just like doing `m >>= (\x -> f x >>= g)`.
