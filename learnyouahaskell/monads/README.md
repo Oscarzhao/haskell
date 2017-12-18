@@ -15,7 +15,7 @@ class Monad m where
     fail msg = error msg
 ```
 
-## Examples
+## Maybe Monad
 
 Definition of `Maybe` instance of Monad:
 
@@ -44,3 +44,90 @@ The principle of `do` is *gluing together monadic values in sequence*.
 We could feel the simplicity of Monad from the example in `foo.hs`.
 
 *Note*: In a `do` expression, every line is a monadic value. To inspect the value, we need to use `<-`.
+
+## List Monad
+
+Definition:
+
+```{haskell}
+instance Monad [] where
+    return x = [x]
+    xs >>= f = concat (map f xs)
+    fail _ = []
+```
+
+Usage:
+
+```{haskell}
+ghci> (*) <$> [1,2,3] <*> [10,100,1000]
+[10,100,1000,20,200,2000,30,300,3000]
+```
+
+### MonadPlus
+
+Let's check the `|` operator, which is `guard` function.
+In this part, we shall study how the `guard` function is implemented.
+
+```{haskell}
+ghci> [ x | x <- [1..50], '7' `elem` show x ]
+[7,17,27,37,47]
+```
+
+The `MonadPlus` type class is for `monads` that can also act as `monoids`.
+It's definition is:
+
+```{haskell}
+class Monad m => MonadPlus m where
+    mzero :: m a
+    mplus :: m a -> m a -> m a
+```
+
+`mzero` is synonymous to `mempty` from the `Monoid` type class and `mplus` corresponds to `mappend`.
+
+List MonadPlus is defined as:
+
+```{haskell}
+instance MonadPlus [] where
+    mzero = []
+    mplus = (++)
+```
+
+The `guard` function is defined as:
+
+```{haskell}
+-- from import Control.Monad
+guard :: (MonadPlus m) => Bool -> m ()
+guard True = return ()
+guard False = mzero
+```
+
+It takes a boolean value and if it's `True`, takes a `()` and puts it in a minimal default context that still succeeds. 
+Otherwise, it makes a failed monadic value. Here it is in action:
+
+```{haskell}
+ghci> guard (5 > 2) :: Maybe ()
+Just ()
+ghci> guard (1 > 2) :: Maybe ()
+Nothing
+ghci> guard (5 > 2) :: [()]
+[()]
+ghci> guard (1 > 2) :: [()]
+[]
+```
+
+It looks the function is useless at all.  In list monad, we can use it to filter out non-deterministic computations. Observe:
+
+```{haskell}
+Prelude Control.Monad> [1..50] >>= (\x -> guard ('7' `elem` show x) >> return x)
+[7,17,27,37,47]
+```
+
+The following function is implemented with `do` notation, which has the same effect:
+
+```{haskell}
+sevensOnly :: [Int]
+sevensOnly = do
+    x <- [1..50]
+    guard ('7' `elem` show x)
+    return x
+```
