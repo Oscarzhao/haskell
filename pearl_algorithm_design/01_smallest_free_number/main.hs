@@ -1,10 +1,10 @@
 import Data.Array (accumArray, Array, (!))
-import Data.List ((\\))
-
+import Data.List ((\\), partition)
+import Data.Array.ST (runSTArray, writeArray, newArray)
 
 -- solution 1: performance issues
-minfree :: [Integer] -> Integer
-minfree xs = head([0..] \\ xs)
+minfreeRaw :: [Integer] -> Integer
+minfreeRaw xs = head([0..] \\ xs)
 
 -- solution 2: rely on accumArray
 checklist :: [Int] -> Array Int Bool
@@ -25,4 +25,11 @@ checklistm xs = runSTArray(do
         return a})
     where n = length xs
 
-
+-- solution 4: divide and conquer
+minfree xs = minfrom 0 (length xs, xs)
+minfrom a (n, xs) | n == 0     = a
+                  | m == b - a = minfrom b (n-m, vs)
+                  | otherwise = minfrom a (m, us)
+                    where b        = a + 1 + n `div` 2
+                          (us, vs) = partition (<b) xs
+                          m        = length us
